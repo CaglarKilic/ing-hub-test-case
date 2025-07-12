@@ -16,6 +16,13 @@ export function initRouter(outlet: HTMLElement) {
           action: async () => {
             await import('./table')
           }
+        },
+        {
+          path: 'edit',
+          component: 'create-edit-form',
+          action: async () => {
+            await import('./form')
+          }
         }
       ]
     },

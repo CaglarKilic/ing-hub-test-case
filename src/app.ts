@@ -1,4 +1,4 @@
-import { LitElement, css, html } from 'lit'
+import { LitElement, html } from 'lit'
 import { customElement } from 'lit/decorators.js'
 
 
@@ -13,8 +13,6 @@ export class App extends LitElement {
       </main>
     `
   }
-
-  static styles = css``
 }
 
 declare global {
