@@ -17,18 +17,18 @@ const columns: ColumnDef<Person, any>[] = [
     header: ({ table }) => html`
       <input
         type="checkbox"
-        @change="${table.getToggleAllRowsSelectedHandler()}"
-        .checked="${table.getIsAllRowsSelected()}"
-        .indeterminate="${table.getIsSomeRowsSelected()}"
+        @change=${table.getToggleAllRowsSelectedHandler()}
+        .checked=${table.getIsAllRowsSelected()}
+        .indeterminate=${table.getIsSomeRowsSelected()}
       />
     `,
     cell: ({ row }) => html`
       <input
         type="checkbox"
-        @change="${row.getToggleSelectedHandler()}"
-        .checked="${row.getIsSelected()}"
-        ?disabled="${!row.getCanSelect()}"
-        .indeterminate="${row.getIsSomeSelected()}"
+        @change=${row.getToggleSelectedHandler()}
+        .checked=${row.getIsSelected()}
+        ?disabled=${!row.getCanSelect()}
+        .indeterminate=${row.getIsSomeSelected()}
       />
     `,
   },
@@ -82,7 +82,7 @@ export class TableEmployee extends LitElement {
     const table = this.tableController.table({
       data,
       columns,
-      filterFns: {},
+      globalFilterFn: 'includesString',
       state: {
         rowSelection: this._rowSelection,
       },
@@ -101,6 +101,12 @@ export class TableEmployee extends LitElement {
     })
 
     return html`
+      <input
+        name="search"
+        type="search"
+        @input=${(e: InputEvent) => table.setGlobalFilter((e.target as HTMLInputElement).value)}
+        placeholder="Search..."
+      />
       <table>
         <thead>
           ${repeat(
@@ -112,15 +118,11 @@ export class TableEmployee extends LitElement {
         headerGroup.headers,
         header => header.id,
         header => html`
-                    <th colspan="${header.colSpan}">
-                      ${header.isPlaceholder
-            ? null
-            : html`<div>
-                            ${flexRender(
-              header.column.columnDef.header,
-              header.getContext()
-            )}
-                          </div>`}
+                    <th> 
+                      ${flexRender(
+          header.column.columnDef.header,
+          header.getContext()
+        )}
                     </th>
                   `
       )}
@@ -165,6 +167,10 @@ export class TableEmployee extends LitElement {
         >
           <
         </button>
+          <strong>
+            ${table.getState().pagination.pageIndex + 1} /
+            ${table.getPageCount()}
+          </strong>
         <button
           @click=${() => table.nextPage()}
           ?disabled=${!table.getCanNextPage()}
@@ -177,13 +183,6 @@ export class TableEmployee extends LitElement {
         >
           >>
         </button>
-        <span style="display: flex;gap:2px">
-          <span>Page</span>
-          <strong>
-            ${table.getState().pagination.pageIndex + 1} of
-            ${table.getPageCount()}
-          </strong>
-        </span>
       </div>
       <style>
         * {
@@ -195,6 +194,8 @@ export class TableEmployee extends LitElement {
         table {
           border: 1px solid lightgray;
           border-collapse: collapse;
+          width: 100%;
+          text-align: center;
         }
 
         tbody {
@@ -202,23 +203,27 @@ export class TableEmployee extends LitElement {
         }
 
         th {
-          border-bottom: 1px solid lightgray;
-          border-right: 1px solid lightgray;
-          padding: 2px 4px;
+          padding: 8px;
         }
 
-        tfoot {
-          color: gray;
+        tr {
+          border: 1px solid lightgray;
         }
 
-        tfoot th {
-          font-weight: normal;
+        td {
+          padding: 8px;
         }
 
         .page-controls {
           display: flex;
+          place-content: center;
           gap: 10px;
           padding: 4px 0;
+          
+          strong {
+            display: flex;
+            align-items: center;
+          }
         }
       </style>
     `
