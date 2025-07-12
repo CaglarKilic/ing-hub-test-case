@@ -1,5 +1,5 @@
-import { LitElement, css, html } from 'lit'
-import { customElement, property, state } from 'lit/decorators.js'
+import { LitElement, html } from 'lit'
+import { customElement, state, query } from 'lit/decorators.js'
 import { repeat } from 'lit/directives/repeat.js'
 import {
   type ColumnDef,
@@ -7,9 +7,16 @@ import {
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
+  type RowData,
   TableController,
 } from '@tanstack/lit-table'
 import { makeData, type Person } from './makeData'
+
+declare module '@tanstack/lit-table' {
+  interface TableMeta<TData extends RowData> {
+    handleDelete: (index: number) => void
+  }
+}
 
 const columns: ColumnDef<Person, any>[] = [
   {
@@ -65,6 +72,13 @@ const columns: ColumnDef<Person, any>[] = [
   {
     accessorKey: 'position',
     header: 'Position'
+  },
+  {
+    id: 'actions',
+    header: 'Actions',
+    cell: ({ row, table }) => html`
+      <button @click=${() => table.options.meta?.handleDelete(row.index)}>Delete</button> 
+    `
   }
 ]
 
@@ -78,13 +92,35 @@ export class TableEmployee extends LitElement {
   @state()
   private _rowSelection: Record<string, boolean> = {}
 
+  @state()
+  private _data = data
+
+  @query('dialog')
+  private dialog!: HTMLDialogElement
+
+  private handleDelete = (index: number) => {
+    this._rowSelection = { ...this._rowSelection, [index]: true }
+    this.dialog.showModal()
+    // this._data = this._data.filter((_, i) => i !== index)
+  }
+
+  private deleteSelectedRows = () => {
+    const selectedIndices = Object.keys(this._rowSelection)
+    this._data = this._data.filter((_, index) => !selectedIndices.includes(index.toString()))
+    this._rowSelection = {}
+    this.dialog.close()
+  }
+
   protected render(): unknown {
     const table = this.tableController.table({
-      data,
+      data: this._data,
       columns,
       globalFilterFn: 'includesString',
       state: {
         rowSelection: this._rowSelection,
+      },
+      meta: {
+        handleDelete: this.handleDelete
       },
       enableRowSelection: true,
       onRowSelectionChange: updaterOrValue => {
@@ -184,6 +220,15 @@ export class TableEmployee extends LitElement {
           >>
         </button>
       </div>
+      <dialog>
+        <p>Are you sure?</p>
+        <p>Below employee(s) will be deleted</p>
+        <ul>
+          ${table.getSelectedRowModel().rows.map(row => html`<li>${row.getValue('firstName')} ${row.getValue('lastName')}</li>`)}
+        </ul>
+        <button @click=${this.deleteSelectedRows}>Proceed</button>
+        <button @click=${() => this.dialog.close}>Cancel</button>
+      </dialog>
       <style>
         * {
           font-family: sans-serif;
