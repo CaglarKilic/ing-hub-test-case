@@ -1,10 +1,12 @@
 import { LitElement, html, css, type PropertyValues } from "lit";
 import { customElement, state } from "lit/decorators.js";
+import { localized, msg } from '@lit/localize';
 import { employeeContext, type Person, type EmployeeContextValue } from "./employee-context";
 import { consume } from "@lit/context";
 import { Router } from "@vaadin/router";
 
 @customElement('create-modify-form')
+@localized()
 export class Form extends LitElement {
   static styles = css`
     :host {
@@ -181,58 +183,58 @@ export class Form extends LitElement {
     const { firstName, lastName, dateOfEmployment, dateOfBirth, phoneNumber, email, department, position } = this._employee ?? {}
 
     return html`
-    ${firstName && html`<p>You are editing ${firstName} ${lastName}</p>`}
+    ${firstName && html`<p>${msg('You are editing')} ${firstName} ${lastName}</p>`}
     <form @submit=${this.handleSubmit}>
       <label for="firstName">
-        First Name
+        ${msg('First Name')}
         <input type="text" id="firstName" name="firstName" title="Only characters and no spaces" pattern="[a-zA-Z]+" value=${firstName} required />
       </label>
 
       <label for="lastName">
-        Last Name
+        ${msg('Last Name')}
         <input type="text" id="lastName" name="lastName" value=${lastName} title="Only characters and no spaces" pattern="[a-zA-Z]+" required />
       </label>
 
       <label for="dateOfEmployment">
-        Date of Employment
+        ${msg('Date of Employment')}
         <input type="date" id="dateOfEmployment" name="dateOfEmployment" value=${dateOfEmployment?.toISOString().split('T')[0]} required />
       </label>
 
       <label for="dateOfBirth">
-        Date of Birth
+        ${msg('Date of Birth')}
         <input type="date" id="dateOfBirth" name="dateOfBirth" value=${dateOfBirth?.toISOString().split('T')[0]} required />
       </label>
 
       <label for="phoneNumber">
-        Phone Number
+        ${msg('Phone Number')}
         <input type="tel" id="phoneNumber" name="phoneNumber" title="International format required +XXXXXXXX" pattern="\\+[0-9]+" value=${phoneNumber} pattern="" required />
       </label>
 
       <label for="email">
-        Email
+        ${msg('Email')}
         <input type="email" id="email" name="email" value=${email} required />
       </label>
 
       <label for="department">
-        Department
+        ${msg('Department')}
         <select id="department" name="department" required>
-          <option ?selected=${department === 'Analytics'} value="Analytics">Analytics</option>
-          <option ?selected=${department === 'Tech'} value="Tech">Tech</option>
+          <option ?selected=${department === 'Analytics'} value="Analytics">${msg('Analytics')}</option>
+          <option ?selected=${department === 'Tech'} value="Tech">${msg('Tech')}</option>
         </select>
       </label>
 
       <label for="position">
-        Position
+        ${msg('Position')}
           <select id="position" name="position" required>
-            <option ?selected=${position === "Junior"} value="Junior">Junior</option>
-            <option ?selected=${position === "Medior"} value="Medior">Medior</option>
-            <option ?selected=${position === "Senior"} value="Senior">Senior</option>
+            <option ?selected=${position === "Junior"} value="Junior">${msg('Junior')}</option>
+            <option ?selected=${position === "Medior"} value="Medior">${msg('Medior')}</option>
+            <option ?selected=${position === "Senior"} value="Senior">${msg('Senior')}</option>
           </select>
         </label>
 
       <div class="form-actions">
-        <input type='submit' value='Save' />
-        <button @click=${() => Router.go('/')} type='button'>Cancel</button>
+        <input type='submit' value=${msg('Save')} />
+        <button @click=${() => Router.go('/')} type='button'>${msg('Cancel')}</button>
       </div>
       </form>
     `

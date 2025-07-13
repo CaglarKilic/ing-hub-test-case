@@ -1,6 +1,7 @@
 import { LitElement, html, css, type PropertyValues } from 'lit'
 import { customElement, state, query } from 'lit/decorators.js'
 import { repeat } from 'lit/directives/repeat.js'
+import { localized, msg } from '@lit/localize'
 import {
   type ColumnDef,
   flexRender,
@@ -22,84 +23,8 @@ declare module '@tanstack/lit-table' {
   }
 }
 
-const columns: ColumnDef<Person, any>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => html`
-      <input
-        type="checkbox"
-        @change=${table.getToggleAllRowsSelectedHandler()}
-        .checked=${table.getIsAllRowsSelected()}
-        .indeterminate=${table.getIsSomeRowsSelected()}
-      />
-    `,
-    cell: ({ row }) => html`
-      <input
-        type="checkbox"
-        @change=${row.getToggleSelectedHandler()}
-        .checked=${row.getIsSelected()}
-        ?disabled=${!row.getCanSelect()}
-        .indeterminate=${row.getIsSomeSelected()}
-      />
-    `,
-  },
-  {
-    accessorKey: 'firstName',
-    header: 'First Name'
-  },
-  {
-    accessorKey: 'lastName',
-    header: 'Last Name',
-  },
-  {
-    id: 'dateOfEmployment',
-    accessorFn: row => row.dateOfEmployment.toLocaleDateString('en-GB'),
-    header: 'Date of Employment',
-  },
-  {
-    id: 'dateOfBirth',
-    accessorFn: row => row.dateOfBirth.toLocaleDateString('en-GB'),
-    header: 'Date of Birth',
-  },
-  {
-    accessorKey: 'phoneNumber',
-    header: 'Phone'
-  },
-  {
-    accessorKey: 'email',
-    header: 'Email'
-  },
-  {
-    accessorKey: 'department',
-    header: 'Department'
-  },
-  {
-    accessorKey: 'position',
-    header: 'Position'
-  },
-  {
-    id: 'actions',
-    header: 'Actions',
-    cell: ({ row, table }) => html`
-      <button class="icon-btn" @click=${() => table.options.meta?.handleEdit(row.index)} title="Edit">
-        <svg width="20" height="20" fill="none" stroke="#ff6600" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-          <path d="M12 20h9" />
-          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19.5 3 21l1.5-4L16.5 3.5z" />
-        </svg>
-      </button>
-      <button class="icon-btn" @click=${() => table.options.meta?.handleDelete(row.index)} title="Delete">
-        <svg width="20" height="20" fill="none" stroke="#ff6600" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-          <polyline points="3 6 5 6 21 6" />
-          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
-          <line x1="10" y1="11" x2="10" y2="17" />
-          <line x1="14" y1="11" x2="14" y2="17" />
-        </svg>
-      </button>
-    `
-  }
-]
-
 @customElement('table-employee')
+@localized()
 export class TableEmployee extends LitElement {
   static styles = css`
     * {
@@ -382,10 +307,69 @@ export class TableEmployee extends LitElement {
     this.dialog.close()
   }
 
+  private get columns(): ColumnDef<Person, any>[] {
+    return [
+      {
+        accessorKey: 'firstName',
+        header: msg('First Name')
+      },
+      {
+        accessorKey: 'lastName',
+        header: msg('Last Name'),
+      },
+      {
+        id: 'dateOfEmployment',
+        accessorFn: row => row.dateOfEmployment.toLocaleDateString('en-GB'),
+        header: msg('Date of Employment'),
+      },
+      {
+        id: 'dateOfBirth',
+        accessorFn: row => row.dateOfBirth.toLocaleDateString('en-GB'),
+        header: msg('Date of Birth'),
+      },
+      {
+        accessorKey: 'phoneNumber',
+        header: msg('Phone')
+      },
+      {
+        accessorKey: 'email',
+        header: msg('Email')
+      },
+      {
+        accessorKey: 'department',
+        header: msg('Department')
+      },
+      {
+        accessorKey: 'position',
+        header: msg('Position')
+      },
+      {
+        id: 'actions',
+        header: msg('Actions'),
+        cell: ({ row, table }) => html`
+          <button class="icon-btn" @click=${() => table.options.meta?.handleEdit(row.index)} title=${msg('Edit')}>
+            <svg width="20" height="20" fill="none" stroke="#ff6600" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19.5 3 21l1.5-4L16.5 3.5z" />
+            </svg>
+          </button>
+          <button class="icon-btn" @click=${() => table.options.meta?.handleDelete(row.index)} title=${msg('Delete')}>
+            <svg width="20" height="20" fill="none" stroke="#ff6600" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+              <line x1="10" y1="11" x2="10" y2="17" />
+              <line x1="14" y1="11" x2="14" y2="17" />
+            </svg>
+          </button>
+        `
+      }
+    ]
+  }
+
   protected render(): unknown {
     const table = this.tableController.table({
       data: this._employeeContext.employees,
-      columns,
+      columns: this.columns,
       globalFilterFn: 'includesString',
       state: {
         rowSelection: this._rowSelection,
@@ -414,11 +398,11 @@ export class TableEmployee extends LitElement {
           name="search"
           type="search"
           @input=${(e: InputEvent) => table.setGlobalFilter((e.target as HTMLInputElement).value)}
-          placeholder="Search..."
+          placeholder=${msg('Search...')}
         />
       </div>
       <div class="title-container">
-        <h1>Employee List</h1>
+        <h1>${msg('Employee List')}</h1>
         <div>
     <button
       @click=${() => this.viewMode = 'table'}
@@ -526,18 +510,18 @@ export class TableEmployee extends LitElement {
         </button>
       </div>
       <dialog>
-        <button class="close-x" @click=${() => this.dialog.close()} title="Close">&times;</button>
+        <button class="close-x" @click=${() => this.dialog.close()} title=${msg('Close')}>&times;</button>
         <div class="dialog-content">
-          <p class="dialog-title">Are you sure?</p>
+          <p class="dialog-title">${msg('Are you sure?')}</p>
           <p class="dialog-desc">
-            Selected employee record(s) will be deleted
+            ${msg('Selected employee record(s) will be deleted')}
           </p>
           <ul class="dialog-list">
             ${table.getSelectedRowModel().rows.map(row => html`<li>${row.getValue('firstName')} ${row.getValue('lastName')}</li>`)}
           </ul>
           <div class="dialog-actions">
-            <button class="proceed-btn" @click=${this.deleteSelectedRows}>Proceed</button>
-            <button class="cancel-btn" @click=${() => this.dialog.close()}>Cancel</button>
+            <button class="proceed-btn" @click=${this.deleteSelectedRows}>${msg('Proceed')}</button>
+            <button class="cancel-btn" @click=${() => this.dialog.close()}>${msg('Cancel')}</button>
           </div>
         </div>
       </dialog>

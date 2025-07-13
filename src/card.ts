@@ -1,9 +1,11 @@
 // src/employee-card.ts
 import { LitElement, html, css } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
+import { localized, msg } from '@lit/localize'
 import type { Person } from './employee-context'
 
 @customElement('employee-card')
+@localized()
 export class EmployeeCard extends LitElement {
   static styles = css`
   :host {
@@ -75,35 +77,35 @@ export class EmployeeCard extends LitElement {
     return html`
       <div class="card">
           <div class="field">
-            <p class="label">First Name:</p>
+            <p class="label">${msg('First Name:')}</p>
             <p class="value">${e.firstName}</p>
           </div>
           <div class="field">
-            <p class="label">Last Name:</p>
+            <p class="label">${msg('Last Name:')}</p>
             <p class="value">${e.lastName}</p>
           </div>
           <div class="field">
-            <p class="label">Date of Employment</p>
+            <p class="label">${msg('Date of Employment')}</p>
             <p class="value">${e.dateOfEmployment.toLocaleDateString('en-GB')}</p>
           </div>
           <div class="field">
-            <p class="label">Date of Birth</p>
+            <p class="label">${msg('Date of Birth')}</p>
             <p class="value">${e.dateOfBirth.toLocaleDateString('en-GB')}</p>
           </div>
           <div class="field">
-            <p class="label">Phone</p>
+            <p class="label">${msg('Phone')}</p>
             <p class="value">${e.phoneNumber}</p>
           </div>
           <div class="field">
-            <p class="label">Email</p>
+            <p class="label">${msg('Email')}</p>
             <p class="value">${e.email}</p>
           </div>
           <div class="field">
-            <p class="label">Department</p>
+            <p class="label">${msg('Department')}</p>
             <p class="value">${e.department}</p>
           </div>
           <div class="field">
-            <p class="label">Position</p>
+            <p class="label">${msg('Position')}</p>
             <p class="value">${e.position}</p>
           </div>
         <div class="actions">
@@ -114,7 +116,7 @@ export class EmployeeCard extends LitElement {
                 <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19.5 3 21l1.5-4L16.5 3.5z" />
               </svg>
             </span>
-            Edit
+            ${msg('Edit')}
           </button>
           <button class="delete-btn" @click=${() => this.dispatchEvent(new CustomEvent('delete', { detail: this.index, bubbles: true, composed: true }))}>
             <span>
@@ -125,7 +127,7 @@ export class EmployeeCard extends LitElement {
                 <line x1="14" y1="11" x2="14" y2="17" />
               </svg>
             </span>
-            Delete
+            ${msg('Delete')}
           </button>
         </div>
       </div>
