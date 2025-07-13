@@ -80,8 +80,20 @@ const columns: ColumnDef<Person, any>[] = [
     id: 'actions',
     header: 'Actions',
     cell: ({ row, table }) => html`
-      <button @click=${() => table.options.meta?.handleEdit(row.index)}>Edit</button>
-      <button @click=${() => table.options.meta?.handleDelete(row.index)}>Delete</button> 
+      <button class="icon-btn" @click=${() => table.options.meta?.handleEdit(row.index)} title="Edit">
+        <svg width="20" height="20" fill="none" stroke="#ff6600" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <path d="M12 20h9" />
+          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19.5 3 21l1.5-4L16.5 3.5z" />
+        </svg>
+      </button>
+      <button class="icon-btn" @click=${() => table.options.meta?.handleDelete(row.index)} title="Delete">
+        <svg width="20" height="20" fill="none" stroke="#ff6600" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <polyline points="3 6 5 6 21 6" />
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+          <line x1="10" y1="11" x2="10" y2="17" />
+          <line x1="14" y1="11" x2="14" y2="17" />
+        </svg>
+      </button>
     `
   }
 ]
@@ -90,46 +102,227 @@ const columns: ColumnDef<Person, any>[] = [
 export class TableEmployee extends LitElement {
   static styles = css`
     * {
-        font-family: sans-serif;
-        font-size: 14px;
-        box-sizing: border-box;
-      }
+      font-family: sans-serif;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    .search-container {
+      width: 100%;
+      display: flex;
+      justify-content: flex-start;
+      margin-top: 1rem;
+      margin-left: 2rem;
+    }
+
+    input[type="search"] {
+      border: 1px solid #e0e0e0;
+      border-radius: 24px;
+      padding: 10px 20px;
+      font-size: 15px;
+      outline: none;
+      width: 280px;
+      background: #fafafa;
+      color: #222;
+      transition: border 0.2s;
+      box-shadow: 0 1px 2px 0 rgba(0,0,0,0.01);
+    }
+
+    input[type="search"]::placeholder {
+      color: #bdbdbd;
+      font-size: 15px;
+      opacity: 1;
+    }
+
+    input[type="search"]:focus {
+      border: 1.5px solid #ff6600;
+      background: #fff;
+    }
 
     table {
-      border: 1px solid lightgray;
-      border-collapse: collapse;
-      width: 100%;
+      margin: 1rem auto;
+      border: none;
+      border-radius: 12px;
+      border-collapse: separate;
+      border-spacing: 0;
+      width: calc(100% - 64px);
+      background: #fff;
+      box-shadow: 0 2px 8px 0 rgba(0,0,0,0.03);
       text-align: center;
     }
 
-    tbody {
-      border-bottom: 1px solid lightgray;
+    thead tr {
+      background: #fff;
     }
 
     th {
-      padding: 8px;
+      color: #ff6600;
+      font-weight: bold;
+      padding: 18px 8px;
+      border-bottom: 2px solid #f2f2f2;
+      text-align: center;
     }
 
-    tr {
-      border: 1px solid lightgray;
+    tbody tr {
+      background: #fff;
+      transition: background 0.2s;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #fafafa;
     }
 
     td {
-      padding: 8px;
+      color: #222;
+      padding: 16px 8px;
+      border-bottom: 1px solid #f2f2f2;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
     }
 
     .page-controls {
       display: flex;
-      place-content: center;
-      gap: 10px;
-      padding: 4px 0;
-      
-      strong {
-        display: flex;
-        align-items: center;
-      }
-    } 
-  
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+      padding: 24px 0 0 0;
+    }
+
+    .page-controls button {
+      border: none;
+      background: transparent;
+      color: #ff6600;
+      font-weight: 500;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .page-controls button[disabled] {
+      color: #ccc;
+      cursor: default;
+    }
+    
+    .page-controls button.active {
+      color: #fff;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      padding: 4px;
+      cursor: pointer;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .icon-btn:hover {
+      background: #fff3e6;
+    }
+    .icon-btn svg {
+      display: block;
+    }
+
+    /* Dialog styles */
+    dialog {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px 0 rgba(0,0,0,0.18);
+      padding: 0;
+      min-width: 380px;
+      max-width: 95vw;
+      background: #fff;
+      position: relative;
+      font-family: inherit;
+      animation: fadeIn 0.18s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px);}
+      to { opacity: 1; transform: none;}
+    }
+    .dialog-content {
+      padding: 32px 28px 24px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .dialog-title {
+      color: #ff6600;
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 8px;
+      margin-top: 0;
+    }
+    .dialog-desc {
+      color: #444;
+      font-size: 1rem;
+      margin-bottom: 18px;
+    }
+    .dialog-list {
+      margin: 0 0 18px 0;
+      padding-left: 18px;
+      color: #222;
+      font-size: 1rem;
+    }
+    .dialog-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .proceed-btn {
+      background: #ff6600;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 0.5rem;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 0;
+    }
+     .proceed-btn:hover {
+      background: #e65c00;
+    }
+    .cancel-btn {
+      background: #fff;
+      color: #7c5cff;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      line-height: 16px;
+      font-weight: 600;
+      padding: 0.5rem;
+      cursor: pointer;
+      width: 100%;
+    }
+    .cancel-btn:hover {
+      border-color: #7c5cff;
+      color: #5636d3;
+    }
+    .close-x {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: #ff6600;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+    }
   `
 
   private tableController = new TableController<Person>(this)
@@ -186,12 +379,14 @@ export class TableEmployee extends LitElement {
     })
 
     return html`
-      <input
-        name="search"
-        type="search"
-        @input=${(e: InputEvent) => table.setGlobalFilter((e.target as HTMLInputElement).value)}
-        placeholder="Search..."
-      />
+      <div class="search-container">
+        <input
+          name="search"
+          type="search"
+          @input=${(e: InputEvent) => table.setGlobalFilter((e.target as HTMLInputElement).value)}
+          placeholder="Search..."
+        />
+      </div>
       <table>
         <thead>
           ${repeat(
@@ -218,7 +413,7 @@ export class TableEmployee extends LitElement {
         <tbody>
           ${table
         .getRowModel()
-        .rows.slice(0, 10)
+        .rows.slice(0, 8)
         .map(
           row => html`
                 <tr>
@@ -270,13 +465,20 @@ export class TableEmployee extends LitElement {
         </button>
       </div>
       <dialog>
-        <p>Are you sure?</p>
-        <p>Below employee(s) will be deleted</p>
-        <ul>
-          ${table.getSelectedRowModel().rows.map(row => html`<li>${row.getValue('firstName')} ${row.getValue('lastName')}</li>`)}
-        </ul>
-        <button @click=${this.deleteSelectedRows}>Proceed</button>
-        <button @click=${() => this.dialog.close}>Cancel</button>
+        <button class="close-x" @click=${() => this.dialog.close()} title="Close">&times;</button>
+        <div class="dialog-content">
+          <p class="dialog-title">Are you sure?</p>
+          <p class="dialog-desc">
+            Selected employee record(s) will be deleted
+          </p>
+          <ul class="dialog-list">
+            ${table.getSelectedRowModel().rows.map(row => html`<li>${row.getValue('firstName')} ${row.getValue('lastName')}</li>`)}
+          </ul>
+          <div class="dialog-actions">
+            <button class="proceed-btn" @click=${this.deleteSelectedRows}>Proceed</button>
+            <button class="cancel-btn" @click=${() => this.dialog.close()}>Cancel</button>
+          </div>
+        </div>
       </dialog>
     `
   }
