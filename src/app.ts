@@ -40,6 +40,13 @@ export class App extends LitElement {
       color: #ff6200;
       cursor: pointer;
     }
+    h1 {
+      margin-left: 2rem;
+      margin-top: 1rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #ff6200; 
+    }
   `
 
   private persistToStorage = (employees: Person[]) => {
@@ -85,6 +92,38 @@ export class App extends LitElement {
     }
   }
 
+  @state()
+  private _currentRoute = ''
+
+  connectedCallback() {
+    super.connectedCallback()
+    this._updateRoute()
+    window.addEventListener('vaadin-router-location-changed', this._updateRoute.bind(this))
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback()
+    window.removeEventListener('vaadin-router-location-changed', this._updateRoute.bind(this))
+  }
+
+  private _updateRoute() {
+    const path = window.location.pathname
+    this._currentRoute = path
+  }
+
+  private _getPageTitle(): string {
+    switch (this._currentRoute) {
+      case '/':
+        return 'Employee List'
+      case '/edit':
+        return 'Edit Employee'
+      case '/create':
+        return 'Add Employee'
+      default:
+        return ''
+    }
+  }
+
   private getCurrentPath() {
     return window.location.pathname
   }
@@ -117,6 +156,7 @@ export class App extends LitElement {
         </div>
       </header>
       <main>
+        <h1>${this._getPageTitle()}</h1>
         <slot></slot>
       </main>
     `
