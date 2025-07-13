@@ -185,12 +185,12 @@ export class Form extends LitElement {
     <form @submit=${this.handleSubmit}>
       <label for="firstName">
         First Name
-        <input type="text" id="firstName" name="firstName" value=${firstName} required />
+        <input type="text" id="firstName" name="firstName" title="Only characters and no spaces" pattern="[a-zA-Z]+" value=${firstName} required />
       </label>
 
       <label for="lastName">
         Last Name
-        <input type="text" id="lastName" name="lastName" value=${lastName}  required />
+        <input type="text" id="lastName" name="lastName" value=${lastName} title="Only characters and no spaces" pattern="[a-zA-Z]+" required />
       </label>
 
       <label for="dateOfEmployment">
@@ -205,7 +205,7 @@ export class Form extends LitElement {
 
       <label for="phoneNumber">
         Phone Number
-        <input type="tel" id="phoneNumber" name="phoneNumber" value=${phoneNumber} required />
+        <input type="tel" id="phoneNumber" name="phoneNumber" title="International format required +XXXXXXXX" pattern="\\+[0-9]+" value=${phoneNumber} pattern="" required />
       </label>
 
       <label for="email">
