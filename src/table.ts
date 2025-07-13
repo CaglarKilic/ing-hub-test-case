@@ -1,4 +1,4 @@
-import { LitElement, html } from 'lit'
+import { LitElement, html, type PropertyValues } from 'lit'
 import { customElement, state, query } from 'lit/decorators.js'
 import { repeat } from 'lit/directives/repeat.js'
 import {
@@ -10,7 +10,9 @@ import {
   type RowData,
   TableController,
 } from '@tanstack/lit-table'
-import { makeData, type Person } from './makeData'
+import { makeData, STORAGE_KEY } from './makeData'
+import { employeeContext, type Person } from './employee-context'
+import { provide } from '@lit/context'
 
 declare module '@tanstack/lit-table' {
   interface TableMeta<TData extends RowData> {
@@ -82,21 +84,27 @@ const columns: ColumnDef<Person, any>[] = [
   }
 ]
 
-const data = makeData(100)
+const data = makeData(50)
 
 @customElement('table-employee')
 export class TableEmployee extends LitElement {
 
   private tableController = new TableController<Person>(this)
 
-  @state()
-  private _rowSelection: Record<string, boolean> = {}
-
+  @provide({ context: employeeContext })
   @state()
   private _data = data
 
+  @state()
+  private _rowSelection: Record<string, boolean> = {}
+
   @query('dialog')
   private dialog!: HTMLDialogElement
+
+
+  protected updated(_changedProperties: PropertyValues): void {
+    if (_changedProperties.has('_data')) localStorage.setItem(STORAGE_KEY, JSON.stringify(this._data))
+  }
 
   private handleDelete = (index: number) => {
     this._rowSelection = { ...this._rowSelection, [index]: true }

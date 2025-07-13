@@ -1,17 +1,9 @@
 import { faker } from '@faker-js/faker'
+import type { Person } from './employee-context'
+
+export const STORAGE_KEY = 'employee-data'
 
 faker.seed(1)
-
-export type Person = {
-  firstName: string
-  lastName: string
-  dateOfEmployment: Date
-  dateOfBirth: Date
-  phoneNumber: string
-  email: string
-  department: 'Analytics' | 'Tech'
-  position: 'Junior' | 'Medior' | 'Senior'
-}
 
 const newPerson = (): Person => {
   return {
@@ -27,5 +19,17 @@ const newPerson = (): Person => {
 }
 
 export function makeData(count: number) {
-  return Array.from({ length: count }, () => newPerson())
+  const raw = localStorage.getItem(STORAGE_KEY)
+  if (raw) {
+    const data = JSON.parse(raw, (key, value) => {
+      if (key.includes('date')) return new Date(value)
+      return value
+    }) as Person[]
+    return data
+  }
+  else {
+    const data = Array.from({ length: count }, () => newPerson())
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+    return data
+  }
 }
