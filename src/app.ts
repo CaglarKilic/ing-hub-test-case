@@ -6,6 +6,7 @@ import { provide } from '@lit/context'
 import { employeeContext, type Person, type EmployeeContextValue } from './employee-context'
 import { STORAGE_KEY } from './makeData'
 import { Router } from '@vaadin/router'
+import { setLocale } from './localization-service.js'
 
 @customElement('app-root')
 @localized()
@@ -41,6 +42,16 @@ export class App extends LitElement {
       font-size: 1rem;
       color: #ff6200;
       cursor: pointer;
+    }
+    .language-select {
+      border: none;
+      background: none;
+      font-size: 1.25rem;
+      cursor: pointer;
+      outline: none;
+    }
+    .language-select:focus {
+      outline: none;
     }
     h1 {
       margin-left: 2rem;
@@ -97,6 +108,9 @@ export class App extends LitElement {
   @state()
   private _currentRoute = ''
 
+  @state()
+  private _currentLocale = localStorage.getItem('preferredLocale') || 'en';
+
   connectedCallback() {
     super.connectedCallback()
     this._updateRoute()
@@ -136,6 +150,20 @@ export class App extends LitElement {
     if (this.getCurrentPath() !== '/create') Router.go('/create')
   }
 
+  private async switchLanguage(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    const locale = select.value;
+
+    try {
+      await setLocale(locale);
+      localStorage.setItem('preferredLocale', locale);
+      this._currentLocale = locale;
+      console.log('Language switched to:', locale);
+    } catch (error) {
+      console.error('Failed to switch language:', error);
+    }
+  }
+
   render() {
     return html`
       <header>
@@ -153,6 +181,14 @@ export class App extends LitElement {
           >
             ${msg('+ Add New')}
           </button>
+          <select 
+            class="language-select"
+            .value=${this._currentLocale}
+            @change=${this.switchLanguage}
+          >
+            <option value="en">🇺🇸</option>
+            <option value="tr">🇹🇷</option>
+          </select>
         </div>
       </header>
       <main>
