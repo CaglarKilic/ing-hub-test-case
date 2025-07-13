@@ -1,4 +1,4 @@
-import { LitElement, html } from 'lit'
+import { LitElement, html, css } from 'lit'
 import { customElement, state, query } from 'lit/decorators.js'
 import { repeat } from 'lit/directives/repeat.js'
 import {
@@ -88,6 +88,49 @@ const columns: ColumnDef<Person, any>[] = [
 
 @customElement('table-employee')
 export class TableEmployee extends LitElement {
+  static styles = css`
+    * {
+        font-family: sans-serif;
+        font-size: 14px;
+        box-sizing: border-box;
+      }
+
+    table {
+      border: 1px solid lightgray;
+      border-collapse: collapse;
+      width: 100%;
+      text-align: center;
+    }
+
+    tbody {
+      border-bottom: 1px solid lightgray;
+    }
+
+    th {
+      padding: 8px;
+    }
+
+    tr {
+      border: 1px solid lightgray;
+    }
+
+    td {
+      padding: 8px;
+    }
+
+    .page-controls {
+      display: flex;
+      place-content: center;
+      gap: 10px;
+      padding: 4px 0;
+      
+      strong {
+        display: flex;
+        align-items: center;
+      }
+    } 
+  
+  `
 
   private tableController = new TableController<Person>(this)
 
@@ -235,48 +278,6 @@ export class TableEmployee extends LitElement {
         <button @click=${this.deleteSelectedRows}>Proceed</button>
         <button @click=${() => this.dialog.close}>Cancel</button>
       </dialog>
-      <style>
-        * {
-          font-family: sans-serif;
-          font-size: 14px;
-          box-sizing: border-box;
-        }
-
-        table {
-          border: 1px solid lightgray;
-          border-collapse: collapse;
-          width: 100%;
-          text-align: center;
-        }
-
-        tbody {
-          border-bottom: 1px solid lightgray;
-        }
-
-        th {
-          padding: 8px;
-        }
-
-        tr {
-          border: 1px solid lightgray;
-        }
-
-        td {
-          padding: 8px;
-        }
-
-        .page-controls {
-          display: flex;
-          place-content: center;
-          gap: 10px;
-          padding: 4px 0;
-          
-          strong {
-            display: flex;
-            align-items: center;
-          }
-        }
-      </style>
     `
   }
 }

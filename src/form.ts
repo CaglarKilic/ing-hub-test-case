@@ -4,7 +4,7 @@ import { employeeContext, type Person, type EmployeeContextValue } from "./emplo
 import { consume } from "@lit/context";
 import { Router } from "@vaadin/router";
 
-@customElement('create-edit-form')
+@customElement('create-modify-form')
 export class Form extends LitElement {
   static styles = css`
     form {
@@ -20,11 +20,16 @@ export class Form extends LitElement {
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
     const params = new URLSearchParams(window.location.search);
-    this._recordId = Number(params.get('id')!);
-    this._employee = this._employeeContext.employees[this._recordId]
+    const pathname = window.location.pathname
+    this._mode = pathname === '/edit' ? 'edit' : 'create'
+    if (this._mode === 'edit') {
+      this._recordId = Number(params.get('id')!);
+      this._employee = this._employeeContext.employees[this._recordId]
+    }
   }
 
   private _recordId!: number
+  private _mode!: 'edit' | 'create'
 
   @consume({ context: employeeContext })
   private _employeeContext!: EmployeeContextValue
@@ -35,10 +40,11 @@ export class Form extends LitElement {
   private handleSubmit(e: SubmitEvent) {
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
-    const updatedEmployee: Person = Object.fromEntries(formData.entries()) as unknown as Person
-    updatedEmployee.dateOfBirth = new Date(updatedEmployee.dateOfBirth)
-    updatedEmployee.dateOfEmployment = new Date(updatedEmployee.dateOfEmployment)
-    this._employeeContext.updateEmployee(this._recordId, updatedEmployee)
+    const employee: Person = Object.fromEntries(formData.entries()) as unknown as Person
+    employee.dateOfBirth = new Date(employee.dateOfBirth)
+    employee.dateOfEmployment = new Date(employee.dateOfEmployment)
+    if (this._mode === 'edit') this._employeeContext.updateEmployee(this._recordId, employee)
+    if (this._mode === 'create') this._employeeContext.addEmployee(employee)
     Router.go('/')
   }
 
@@ -46,7 +52,7 @@ export class Form extends LitElement {
     const { firstName, lastName, dateOfEmployment, dateOfBirth, phoneNumber, email, department, position } = this._employee ?? {}
 
     return html`
-    <p>You are editing ${firstName} ${lastName}</p>
+    ${firstName && html`<p>You are editing ${firstName} ${lastName}</p>`}
     <form @submit=${this.handleSubmit}>
       <label for="firstName">
         First Name
