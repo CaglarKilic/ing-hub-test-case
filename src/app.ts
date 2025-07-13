@@ -1,12 +1,46 @@
-import { LitElement, html } from 'lit'
+import { LitElement, html, css } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
 import { makeData } from './makeData'
 import { provide } from '@lit/context'
 import { employeeContext, type Person, type EmployeeContextValue } from './employee-context'
 import { STORAGE_KEY } from './makeData'
+import { Router } from '@vaadin/router'
 
 @customElement('app-root')
 export class App extends LitElement {
+  static styles = css`
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #fff;
+      box-shadow: 0 2px 8px 0 rgba(0,0,0,0.04);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 4rem;
+    }
+    .header-left {
+      font-weight: bold;
+      font-size: 1.25rem;
+      color: #ff6200;
+    }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .header-btn {
+      background: none;
+      border: none;
+      font: inherit;
+      font-weight: 500;
+      font-size: 1rem;
+      color: #ff6200;
+      cursor: pointer;
+    }
+  `
 
   private persistToStorage = (employees: Person[]) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(employees))
@@ -51,9 +85,37 @@ export class App extends LitElement {
     }
   }
 
+  private getCurrentPath() {
+    return window.location.pathname
+  }
+
+  private goToEmployees() {
+    if (this.getCurrentPath() !== '/') Router.go('/')
+  }
+
+  private goToCreate() {
+    if (this.getCurrentPath() !== '/create') Router.go('/create')
+  }
+
   render() {
     return html`
-      <header>ING</header>
+      <header>
+        <div class="header-left">ING</div>
+        <div class="header-right">
+          <button
+            class="header-btn"
+            @click=${this.goToEmployees}
+          >
+            Employees
+          </button>
+          <button
+            class="header-btn"
+            @click=${this.goToCreate}
+          >
+            + Add New
+          </button>
+        </div>
+      </header>
       <main>
         <slot></slot>
       </main>
