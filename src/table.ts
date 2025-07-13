@@ -1,4 +1,4 @@
-import { LitElement, html, type PropertyValues } from 'lit'
+import { LitElement, html } from 'lit'
 import { customElement, state, query } from 'lit/decorators.js'
 import { repeat } from 'lit/directives/repeat.js'
 import {
@@ -10,13 +10,14 @@ import {
   type RowData,
   TableController,
 } from '@tanstack/lit-table'
-import { makeData, STORAGE_KEY } from './makeData'
-import { employeeContext, type Person } from './employee-context'
-import { provide } from '@lit/context'
+import { employeeContext, type Person, type EmployeeContextValue } from './employee-context'
+import { consume } from '@lit/context'
+import { Router } from '@vaadin/router'
 
 declare module '@tanstack/lit-table' {
   interface TableMeta<TData extends RowData> {
     handleDelete: (index: number) => void
+    handleEdit: (index: number) => void
   }
 }
 
@@ -79,21 +80,19 @@ const columns: ColumnDef<Person, any>[] = [
     id: 'actions',
     header: 'Actions',
     cell: ({ row, table }) => html`
+      <button @click=${() => table.options.meta?.handleEdit(row.index)}>Edit</button>
       <button @click=${() => table.options.meta?.handleDelete(row.index)}>Delete</button> 
     `
   }
 ]
-
-const data = makeData(50)
 
 @customElement('table-employee')
 export class TableEmployee extends LitElement {
 
   private tableController = new TableController<Person>(this)
 
-  @provide({ context: employeeContext })
-  @state()
-  private _data = data
+  @consume({ context: employeeContext, subscribe: true })
+  private _employeeContext!: EmployeeContextValue
 
   @state()
   private _rowSelection: Record<string, boolean> = {}
@@ -101,34 +100,33 @@ export class TableEmployee extends LitElement {
   @query('dialog')
   private dialog!: HTMLDialogElement
 
-
-  protected updated(_changedProperties: PropertyValues): void {
-    if (_changedProperties.has('_data')) localStorage.setItem(STORAGE_KEY, JSON.stringify(this._data))
-  }
-
   private handleDelete = (index: number) => {
     this._rowSelection = { ...this._rowSelection, [index]: true }
     this.dialog.showModal()
-    // this._data = this._data.filter((_, i) => i !== index)
+  }
+
+  private handleEdit = (index: number) => {
+    Router.go(`/edit?id=${index}`)
   }
 
   private deleteSelectedRows = () => {
-    const selectedIndices = Object.keys(this._rowSelection)
-    this._data = this._data.filter((_, index) => !selectedIndices.includes(index.toString()))
+    const selectedIndices = Object.keys(this._rowSelection).map(Number)
+    this._employeeContext.deleteEmployees(selectedIndices)
     this._rowSelection = {}
     this.dialog.close()
   }
 
   protected render(): unknown {
     const table = this.tableController.table({
-      data: this._data,
+      data: this._employeeContext.employees,
       columns,
       globalFilterFn: 'includesString',
       state: {
         rowSelection: this._rowSelection,
       },
       meta: {
-        handleDelete: this.handleDelete
+        handleDelete: this.handleDelete,
+        handleEdit: this.handleEdit
       },
       enableRowSelection: true,
       onRowSelectionChange: updaterOrValue => {

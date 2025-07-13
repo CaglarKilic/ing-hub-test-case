@@ -11,4 +11,12 @@ export type Person = {
   position: 'Junior' | 'Medior' | 'Senior'
 }
 
-export const employeeContext = createContext<Person[]>('employee-context')
+export type EmployeeContextValue = {
+  employees: Person[]
+  addEmployee: (employee: Person) => void
+  updateEmployee: (index: number, employee: Person) => void
+  deleteEmployee: (index: number) => void
+  deleteEmployees: (indices: number[]) => void
+}
+
+export const employeeContext = createContext<EmployeeContextValue>('employee-context')
