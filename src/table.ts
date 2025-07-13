@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit'
+import { LitElement, html, css, type PropertyValues } from 'lit'
 import { customElement, state, query } from 'lit/decorators.js'
 import { repeat } from 'lit/directives/repeat.js'
 import {
@@ -13,6 +13,7 @@ import {
 import { employeeContext, type Person, type EmployeeContextValue } from './employee-context'
 import { consume } from '@lit/context'
 import { Router } from '@vaadin/router'
+import './card'
 
 declare module '@tanstack/lit-table' {
   interface TableMeta<TData extends RowData> {
@@ -115,6 +116,14 @@ export class TableEmployee extends LitElement {
       margin-left: 2rem;
     }
 
+     h1 {
+      margin-left: 2rem;
+      margin-top: 1rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #ff6200; 
+    }
+
     input[type="search"] {
       border: 1px solid #e0e0e0;
       border-radius: 24px;
@@ -124,7 +133,6 @@ export class TableEmployee extends LitElement {
       width: 280px;
       background: #fafafa;
       color: #222;
-      transition: border 0.2s;
       box-shadow: 0 1px 2px 0 rgba(0,0,0,0.01);
     }
 
@@ -165,7 +173,6 @@ export class TableEmployee extends LitElement {
 
     tbody tr {
       background: #fff;
-      transition: background 0.2s;
     }
 
     tbody tr:nth-child(even) {
@@ -189,7 +196,7 @@ export class TableEmployee extends LitElement {
       justify-content: center;
       align-items: center;
       gap: 4px;
-      padding: 24px 0 0 0;
+      padding: 24px 0 ;
     }
 
     .page-controls button {
@@ -244,7 +251,7 @@ export class TableEmployee extends LitElement {
       background: #fff;
       position: relative;
       font-family: inherit;
-      animation: fadeIn 0.18s;
+      animation: fadeIn 0.25s;
     }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px);}
@@ -323,6 +330,20 @@ export class TableEmployee extends LitElement {
       padding: 0;
       line-height: 1;
     }
+    .title-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-right: 2rem;
+    }
+    .cards-container {
+      display: flex;
+      flex-wrap: wrap;
+      column-gap: 4rem;
+      row-gap: 2rem;
+      justify-content: center;
+      margin: 0 2rem;
+    }
   `
 
   private tableController = new TableController<Person>(this)
@@ -332,6 +353,15 @@ export class TableEmployee extends LitElement {
 
   @state()
   private _rowSelection: Record<string, boolean> = {}
+
+  @state()
+  private viewMode: 'table' | 'card' = localStorage.getItem('viewMode') as 'table' | 'card' ?? 'table'
+
+  protected updated(_changedProperties: PropertyValues): void {
+    if (_changedProperties.has('viewMode')) {
+      localStorage.setItem('viewMode', this.viewMode)
+    }
+  }
 
   @query('dialog')
   private dialog!: HTMLDialogElement
@@ -387,53 +417,84 @@ export class TableEmployee extends LitElement {
           placeholder="Search..."
         />
       </div>
-      <table>
-        <thead>
-          ${repeat(
+      <div class="title-container">
+        <h1>Employee List</h1>
+        <div>
+    <button
+      @click=${() => this.viewMode = 'table'}
+      style="background: none; border: none; cursor: pointer;"
+    >
+    <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#ff6600"><path d="M120-240v-66.67h720V-240H120Zm0-206.67v-66.66h720v66.66H120Zm0-206.66V-720h720v66.67H120Z"/></svg>
+    </button>
+    <button
+      @click=${() => { this.viewMode = 'card'; this._rowSelection = {} }}
+      style="background: none; border: none; cursor: pointer;"
+    >
+    <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#ff6600"><path d="M230.67-160q-29.67 0-50.17-20.5T160-230.67q0-29.66 20.5-50.16 20.5-20.5 50.17-20.5 29.66 0 50.16 20.5 20.5 20.5 20.5 50.16 0 29.67-20.5 50.17T230.67-160ZM480-160q-29.67 0-50.17-20.5t-20.5-50.17q0-29.66 20.5-50.16 20.5-20.5 50.17-20.5t50.17 20.5q20.5 20.5 20.5 50.16 0 29.67-20.5 50.17T480-160Zm249.33 0q-29.66 0-50.16-20.5-20.5-20.5-20.5-50.17 0-29.66 20.5-50.16 20.5-20.5 50.16-20.5 29.67 0 50.17 20.5t20.5 50.16q0 29.67-20.5 50.17T729.33-160ZM230.67-409.33q-29.67 0-50.17-20.5T160-480q0-29.67 20.5-50.17t50.17-20.5q29.66 0 50.16 20.5 20.5 20.5 20.5 50.17t-20.5 50.17q-20.5 20.5-50.16 20.5Zm249.33 0q-29.67 0-50.17-20.5T409.33-480q0-29.67 20.5-50.17t50.17-20.5q29.67 0 50.17 20.5t20.5 50.17q0 29.67-20.5 50.17T480-409.33Zm249.33 0q-29.66 0-50.16-20.5-20.5-20.5-20.5-50.17t20.5-50.17q20.5-20.5 50.16-20.5 29.67 0 50.17 20.5T800-480q0 29.67-20.5 50.17t-50.17 20.5ZM230.67-658.67q-29.67 0-50.17-20.5T160-729.33q0-29.67 20.5-50.17t50.17-20.5q29.66 0 50.16 20.5 20.5 20.5 20.5 50.17 0 29.66-20.5 50.16-20.5 20.5-50.16 20.5Zm249.33 0q-29.67 0-50.17-20.5t-20.5-50.16q0-29.67 20.5-50.17T480-800q29.67 0 50.17 20.5t20.5 50.17q0 29.66-20.5 50.16-20.5 20.5-50.17 20.5Zm249.33 0q-29.66 0-50.16-20.5-20.5-20.5-20.5-50.16 0-29.67 20.5-50.17t50.16-20.5q29.67 0 50.17 20.5t20.5 50.17q0 29.66-20.5 50.16-20.5 20.5-50.17 20.5Z"/></svg>
+    </button>
+  </div>
+      </div>
+      ${this.viewMode === 'table' ? html`
+      
+        <table>
+          <thead>
+            ${repeat(
       table.getHeaderGroups(),
       headerGroup => headerGroup.id,
       headerGroup => html`
-              <tr>
-                ${repeat(
+                <tr>
+                  ${repeat(
         headerGroup.headers,
         header => header.id,
         header => html`
-                    <th> 
-                      ${flexRender(
+                      <th> 
+                        ${flexRender(
           header.column.columnDef.header,
           header.getContext()
         )}
-                    </th>
-                  `
+                      </th>
+                    `
       )}
-              </tr>
-            `
-    )}
-        </thead>
-        <tbody>
-          ${table
-        .getRowModel()
-        .rows.slice(0, 8)
-        .map(
-          row => html`
-                <tr>
-                  ${row
-              .getVisibleCells()
-              .map(
-                cell => html`
-                        <td>
-                          ${flexRender(
-                  cell.column.columnDef.cell,
-                  cell.getContext()
-                )}
-                        </td>
-                      `
-              )}
                 </tr>
               `
-        )}
-        </tbody>
-      </table>
+    )}
+          </thead>
+          <tbody>
+            ${table
+          .getRowModel()
+          .rows.slice(0, 8)
+          .map(
+            row => html`
+                  <tr>
+                    ${row
+                .getVisibleCells()
+                .map(
+                  cell => html`
+                          <td>
+                            ${flexRender(
+                    cell.column.columnDef.cell,
+                    cell.getContext()
+                  )}
+                          </td>
+                        `
+                )}
+                  </tr>
+                `
+          )}
+          </tbody>
+        </table>
+      `: html`
+     <div class="cards-container">
+        ${table.getRowModel().rows.map(row => html`
+          <employee-card
+            .employee=${row.original}
+            .index=${row.index}
+            @edit=${(e: CustomEvent) => this.handleEdit(e.detail)}
+            @delete=${(e: CustomEvent) => this.handleDelete(e.detail)}
+          ></employee-card>
+        `)}
+      </div> 
+      `}
       <div class="page-controls">
         <button
           @click=${() => table.setPageIndex(0)}

@@ -113,8 +113,6 @@ export class App extends LitElement {
 
   private _getPageTitle(): string {
     switch (this._currentRoute) {
-      case '/':
-        return 'Employee List'
       case '/edit':
         return 'Edit Employee'
       case '/create':
