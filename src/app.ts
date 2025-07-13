@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
+import { localized, msg } from '@lit/localize'
 import { makeData } from './makeData'
 import { provide } from '@lit/context'
 import { employeeContext, type Person, type EmployeeContextValue } from './employee-context'
@@ -7,6 +8,7 @@ import { STORAGE_KEY } from './makeData'
 import { Router } from '@vaadin/router'
 
 @customElement('app-root')
+@localized()
 export class App extends LitElement {
   static styles = css`
     header {
@@ -114,9 +116,9 @@ export class App extends LitElement {
   private _getPageTitle(): string {
     switch (this._currentRoute) {
       case '/edit':
-        return 'Edit Employee'
+        return msg('Edit Employee')
       case '/create':
-        return 'Add Employee'
+        return msg('Add Employee')
       default:
         return ''
     }
@@ -143,13 +145,13 @@ export class App extends LitElement {
             class="header-btn"
             @click=${this.goToEmployees}
           >
-            Employees
+            ${msg('Employees')}
           </button>
           <button
             class="header-btn"
             @click=${this.goToCreate}
           >
-            + Add New
+            ${msg('+ Add New')}
           </button>
         </div>
       </header>

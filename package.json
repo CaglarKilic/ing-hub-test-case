@@ -6,16 +6,20 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lit:extract": "lit-localize extract",
+    "lit:build": "lit-localize build"
   },
   "dependencies": {
     "@lit/context": "^1.1.6",
+    "@lit/localize": "^0.12.2",
     "@tanstack/lit-table": "^8.21.3",
     "@vaadin/router": "^2.0.0",
     "lit": "^3.3.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.9.0",
+    "@lit/localize-tools": "^0.8.0",
     "typescript": "~5.8.3",
     "vite": "^7.0.4"
   }

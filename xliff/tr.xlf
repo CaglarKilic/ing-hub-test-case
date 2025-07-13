@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2"
+  xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file target-language="tr" source-language="en" original="lit-localize-inputs" datatype="plaintext">
+    <body>
+      <trans-unit id="scba00271d50c74f6">
+        <source>Employees</source>
+        <target>Calisanlar</target>
+      </trans-unit>
+      <trans-unit id="sf9a23590df228167">
+        <source>+ Add New</source>
+      </trans-unit>
+      <trans-unit id="s8a9fa9684ba37683">
+        <source>Edit Employee</source>
+      </trans-unit>
+      <trans-unit id="s32c9b3dd030fc24c">
+        <source>Add Employee</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
