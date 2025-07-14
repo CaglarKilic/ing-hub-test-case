@@ -6,6 +6,7 @@ import { provide } from '@lit/context'
 import { employeeContext, type Person, type EmployeeContextValue } from './employee-context'
 import { Router } from '@vaadin/router'
 import { setLocale } from './localization-service.js'
+import './index.css'
 
 @customElement('app-root')
 @localized()

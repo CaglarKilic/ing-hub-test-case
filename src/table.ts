@@ -171,11 +171,7 @@ export class TableEmployee extends LitElement {
       border-radius: 12px;
       box-shadow: 0 4px 24px 0 rgba(0,0,0,0.18);
       padding: 0;
-      min-width: 380px;
-      max-width: 95vw;
       background: #fff;
-      position: relative;
-      font-family: inherit;
       animation: fadeIn 0.25s;
     }
     @keyframes fadeIn {
@@ -293,7 +289,7 @@ export class TableEmployee extends LitElement {
 
   private handleDelete = (index: number) => {
     this._rowSelection = { ...this._rowSelection, [index]: true }
-    this.dialog.showModal()
+    this.openModal(true)
   }
 
   private handleEdit = (index: number) => {
@@ -304,7 +300,18 @@ export class TableEmployee extends LitElement {
     const selectedIndices = Object.keys(this._rowSelection).map(Number)
     this._employeeContext.deleteEmployees(selectedIndices)
     this._rowSelection = {}
-    this.dialog.close()
+    this.openModal(false)
+  }
+
+  private openModal = (action: boolean) => {
+    if (action && !this.dialog.open) {
+      document.body.classList.toggle('scroll-lock')
+      this.dialog.showModal()
+    }
+    if (!action && this.dialog.open) {
+      document.body.classList.toggle('scroll-lock')
+      this.dialog.close()
+    }
   }
 
   private get columns(): ColumnDef<Person, any>[] {
@@ -529,7 +536,7 @@ export class TableEmployee extends LitElement {
         </button>
       </div>
       <dialog>
-        <button class="close-x" @click=${() => this.dialog.close()} title=${msg('Close')}>&times;</button>
+        <button class="close-x" @click=${() => this.openModal(false)} title=${msg('Close')}>&times;</button>
         <div class="dialog-content">
           <p class="dialog-title">${msg('Are you sure?')}</p>
           <p class="dialog-desc">
@@ -540,7 +547,7 @@ export class TableEmployee extends LitElement {
           </ul>
           <div class="dialog-actions">
             <button class="proceed-btn" @click=${this.deleteSelectedRows}>${msg('Proceed')}</button>
-            <button class="cancel-btn" @click=${() => this.dialog.close()}>${msg('Cancel')}</button>
+            <button class="cancel-btn" @click=${() => this.openModal(false)}>${msg('Cancel')}</button>
           </div>
         </div>
       </dialog>
