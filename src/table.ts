@@ -366,7 +366,7 @@ export class TableEmployee extends LitElement {
     ]
   }
 
-  protected render(): unknown {
+  render(): unknown {
     const table = this.tableController.table({
       data: this._employeeContext.employees,
       columns: this.columns,
@@ -446,7 +446,7 @@ export class TableEmployee extends LitElement {
           <tbody>
             ${table
           .getRowModel()
-          .rows.slice(0, 8)
+          .rows
           .map(
             row => html`
                   <tr>
@@ -493,8 +493,7 @@ export class TableEmployee extends LitElement {
           <
         </button>
           <strong>
-            ${table.getState().pagination.pageIndex + 1} /
-            ${table.getPageCount()}
+            ${table.getState().pagination.pageIndex + 1} / ${table.getPageCount()}
           </strong>
         <button
           @click=${() => table.nextPage()}

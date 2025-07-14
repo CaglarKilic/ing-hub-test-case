@@ -2,6 +2,9 @@ import { LitElement, html } from 'lit'
 import { provide } from '@lit/context'
 import { state } from 'lit/decorators.js'
 import { employeeContext, type EmployeeContextValue, type Person } from '../src/employee-context.js'
+import { makeData } from '../src/makeData.js'
+
+const data = makeData(29)
 
 // Create a test provider using the existing context
 export class TestProvider extends LitElement {
@@ -18,7 +21,8 @@ export class TestProvider extends LitElement {
         email: 'john.doe@example.com',
         department: 'Tech',
         position: 'Senior'
-      } as Person
+      } as Person,
+      ...data
     ],
     addEmployee: () => { },
     updateEmployee: () => { },

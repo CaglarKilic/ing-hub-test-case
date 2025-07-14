@@ -4,7 +4,9 @@ import { sourceLocale, targetLocales } from './generated/locale-codes.js';
 export const { setLocale, getLocale } = configureLocalization({
   sourceLocale,
   targetLocales,
-  loadLocale: (locale) => import(`/src/generated/locales/${locale}.js`),
+  loadLocale: (locale) => import(
+    /* @vite-ignore */
+    `/src/generated/locales/${locale}.js`),
 });
 
 const savedLocale = localStorage.getItem('preferredLocale') || 'en';

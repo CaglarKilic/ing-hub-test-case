@@ -1,10 +1,9 @@
 import { LitElement, html, css } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
 import { localized, msg } from '@lit/localize'
-import { makeData } from './makeData'
+import { makeData, STORAGE_KEY } from './makeData'
 import { provide } from '@lit/context'
 import { employeeContext, type Person, type EmployeeContextValue } from './employee-context'
-import { STORAGE_KEY } from './makeData'
 import { Router } from '@vaadin/router'
 import { setLocale } from './localization-service.js'
 
