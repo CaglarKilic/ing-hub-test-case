@@ -1,4 +1,4 @@
-import { fixture, expect, html, oneEvent } from '@open-wc/testing'
+import { fixture, html, oneEvent } from '@open-wc/testing'
 import { EmployeeCard } from '../../src/card.js'
 import type { Person } from '../../src/employee-context.js'
 
