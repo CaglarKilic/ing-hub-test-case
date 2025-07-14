@@ -310,6 +310,26 @@ export class TableEmployee extends LitElement {
   private get columns(): ColumnDef<Person, any>[] {
     return [
       {
+        id: 'select',
+        header: ({ table }) => html`
+      <input
+        type="checkbox"
+        @change=${table.getToggleAllRowsSelectedHandler()}
+        .checked=${table.getIsAllRowsSelected()}
+        .indeterminate=${table.getIsSomeRowsSelected()}
+      />
+    `,
+        cell: ({ row }) => html`
+      <input
+        type="checkbox"
+        @change=${row.getToggleSelectedHandler()}
+        .checked=${row.getIsSelected()}
+        ?disabled=${!row.getCanSelect()}
+        .indeterminate=${row.getIsSomeSelected()}
+      />
+    `,
+      },
+      {
         accessorKey: 'firstName',
         header: msg('First Name')
       },
