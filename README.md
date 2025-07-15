@@ -15,11 +15,13 @@ For data persistence, the application uses **local storage** to store employee d
 ## Installation
 
 ### Using pnpm (recommended)
+
 ```bash
 pnpm i
 ```
 
 ### Using npm
+
 If pnpm is not installed on your system, remove the `pnpm-lock.yaml` file and use npm instead:
 
 ```bash
@@ -28,6 +30,7 @@ npm install
 ```
 
 **Note**: Localization folders are prebuilt and included in the repository. If you need to add new translations, you can use:
+
 ```bash
 pnpm localize:extract  # Extract translatable strings
 # Add your translations to the xliff files
@@ -35,6 +38,7 @@ pnpm localize:build    # Build the localization files
 ```
 
 Or with npm:
+
 ```bash
 npm run localize:extract  # Extract translatable strings
 # Add your translations to the xliff files
@@ -44,12 +48,15 @@ npm run localize:build    # Build the localization files
 ## Running
 
 ### Development
+
 #### Using pnpm
+
 ```bash
 pnpm dev
 ```
 
 #### Using npm
+
 ```bash
 npm run dev
 ```
@@ -57,14 +64,77 @@ npm run dev
 Then open your browser and go to [http://localhost:5173](http://localhost:5173)
 
 ### Production Build
+
 #### Using pnpm
+
 ```bash
 pnpm build
 pnpm preview
 ```
 
 #### Using npm
+
 ```bash
 npm run build
 npm run preview
 ```
+
+## Testing
+
+The project uses **Vitest** for testing with **jsdom** environment for DOM testing and **@open-wc/testing** for web component testing utilities including `fixture` and `oneEvent`.
+
+### Running Tests
+
+#### Using pnpm
+
+```bash
+pnpm test
+```
+
+#### Using npm
+
+```bash
+npm run test
+```
+
+### Coverage Report
+
+To generate a coverage report:
+
+#### Using pnpm
+
+```bash
+pnpm coverage
+```
+
+#### Using npm
+
+```bash
+npm run coverage
+```
+
+The coverage report shows test coverage for the main application files:
+
+- `src/app.ts`
+- `src/card.ts`
+- `src/form.ts`
+- `src/table.ts`
+
+#### Current Coverage Statistics
+
+| File          | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s |
+| ------------- | ------- | -------- | ------- | ------- | ----------------- |
+| **All files** | 97.25   | 96.87    | 93.93   | 97.25   | -                 |
+| **app.ts**    | 98.23   | 95.23    | 100     | 98.23   | 163-164           |
+| **card.ts**   | 100     | 100      | 100     | 100     | -                 |
+| **form.ts**   | 100     | 100      | 100     | 100     | -                 |
+| **table.ts**  | 95.33   | 96.42    | 85.71   | 95.33   | 312-314, 410-415  |
+
+The project maintains excellent test coverage with:
+
+- **97.25%** overall statement coverage
+- **96.87%** branch coverage
+- **93.93%** function coverage
+- **97.25%** line coverage
+
+Setup and config files for libraries like router, localization and data generation are not included in test coverage.
